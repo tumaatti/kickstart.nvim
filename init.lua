@@ -545,7 +545,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -811,7 +811,7 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc', 'go', 'python' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -915,6 +915,20 @@ end)
 vim.keymap.set('n', '<C-S-N>', function()
   harpoon:list():next()
 end)
+
+local ex_current_file = function()
+  local cur_file = vim.fn.expand '%:t'
+  local buffer = vim.api.nvim_get_current_buf()
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+
+  vim.api.nvim_buf_set_mark(buffer, 'A', line, col, {})
+  vim.cmd.Ex()
+  vim.fn.search('^' .. cur_file .. '$')
+end
+
+vim.keymap.set('n', '-', ex_current_file)
+-- '-' to open :Ex -> ''A' to return to same place. What should I
+-- use instead of the 'A to get back? That seems bit stupid.
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
